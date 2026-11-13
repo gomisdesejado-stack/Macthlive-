@@ -228,15 +228,21 @@ async function loadFootballMatches() {
       section.appendChild(title);
 
       league.matches.slice(0, 10).forEach(match => {
-        const p = document.createElement('p');
-        p.textContent =
-          match.homeTeam.name + ' ' +
-          (match.score.fullTime.home ?? '-') + ' - ' +
-          (match.score.fullTime.away ?? '-') + ' ' +
-          match.awayTeam.name + ' · ' +
-          new Date(match.utcDate).toLocaleString('fr-FR');
-        section.appendChild(p);
-      });
+  const p = document.createElement('p');
+
+  const home = match.homeTeam?.name || 'Équipe inconnue';
+  const away = match.awayTeam?.name || 'Équipe inconnue';
+  const homeScore = match.score?.fullTime?.home ?? '-';
+  const awayScore = match.score?.fullTime?.away ?? '-';
+  const date = match.utcDate
+    ? new Date(match.utcDate).toLocaleString('fr-FR')
+    : '';
+
+  p.textContent = home + ' ' + homeScore + ' - ' +
+    awayScore + ' ' + away + ' · ' + date;
+
+  section.appendChild(p);
+});
 
       if (!league.matches.length) {
         const p = document.createElement('p');
