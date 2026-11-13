@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08151d"><title>MatchLive</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#08151d;color:#f5f8fa;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:600px;margin:auto;min-height:100vh;padding-bottom:28px}
+header{padding:22px 18px 18px;background:linear-gradient(130deg,#073c35,#0c7661);border-radius:0 0 24px 24px}
+.brand{font-size:27px;font-weight:900;letter-spacing:-1px}.brand span{color:#a8f0cf}
+header p{margin:5px 0 0;color:#d3eee5;font-size:13px}
+main{padding:16px}
+h2{font-size:18px;margin:4px 0 12px}
+.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}
+.tab{white-space:nowrap;border:1px solid #28404a;background:#10232d;color:#dbe7eb;padding:10px 15px;border-radius:22px;font-weight:650}
+.tab.active{background:#a8f0cf;color:#08231d;border-color:#a8f0cf}
+.panel{background:#10232d;border:1px solid #213a44;border-radius:17px;padding:15px;margin:12px 0}
+.live{color:#ff7777;font-size:11px;font-weight:800;letter-spacing:.7px}
+.match{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
+.team{flex:1;text-align:center;font-weight:700}.versus{color:#9eb0b8;font-size:12px}
+.meta{color:#aebfc5;font-size:12px;text-align:center;margin-top:8px}
+button{font:inherit;cursor:pointer}
+.primary{border:0;background:#a8f0cf;color:#08231d;padding:11px 14px;border-radius:11px;font-weight:800;width:100%;margin-top:9px}
+.secondary{border:1px solid #36535e;background:#142d38;color:#e6f3f6;padding:10px 12px;border-radius:10px;width:100%;margin-top:8px}
+.small{font-size:12px;color:#aebfc5;line-height:1.5}
+#player{display:none}
+input{width:100%;padding:12px;border:1px solid #36535e;border-radius:10px;background:#08151d;color:white;margin:8px 0}
+video{width:100%;border-radius:12px;background:#000;max-height:300px}
+.notice{background:#192c33;border-left:3px solid #a8f0cf;padding:12px;border-radius:8px;font-size:12px;color:#d6e3e6;line-height:1.5}
+footer{text-align:center;color:#8499a1;font-size:11px;padding:10px 20px}
+</style></head>
+<body><div class="app">
+<header><div class="brand">MATCH<span>LIVE</span> ⚽</div><p>Tous les sports, au même endroit.</p></header>
+<main>
+
+<section class="panel" id="account">
+  <h2>👤 Mon compte MatchLive</h2>
+  <p class="small" id="authStatus">Connecte-toi ou crée gratuitement ton compte.</p>
+  <input id="authEmail" type="email" autocomplete="email" placeholder="Ton adresse e-mail">
+  <input id="authPassword" type="password" autocomplete="current-password" placeholder="Mot de passe (6 caractères minimum)">
+  <button class="primary" id="signupBtn">Créer mon compte</button>
+  <button class="secondary" id="loginBtn">Me connecter</button>
+  <button class="secondary" id="googleBtn">Continuer avec Google</button>
+  <button class="secondary" id="logoutBtn" style="display:none">Me déconnecter</button>
+  <p class="small" id="authMessage">La connexion nécessite que MatchLive soit publié sur une adresse HTTPS autorisée dans Firebase.</p>
+</section>
+
+<div class="notice">Bienvenue ! Cette première version est une démonstration : les rencontres ci-dessous sont des exemples, pas des scores en direct. Les diffusions vidéo nécessitent des liens autorisés par les détenteurs de droits.</div>
+<div class="tabs">
+<button class="tab active" onclick="choose('football',this)">⚽ Football</button>
+<button class="tab" onclick="choose('basket',this)">🏀 Basketball</button>
+<button class="tab" onclick="choose('tennis',this)">🎾 Tennis</button>
+<button class="tab" onclick="choose('other',this)">🏅 Autres</button>
+</div>
+<h2 id="heading">Football</h2>
+<div id="events"></div>
+<section class="panel" id="player">
+<h2>Lecteur MatchLive</h2>
+<p class="small">Colle ici une adresse de diffusion vidéo que tu es autorisé à utiliser (par exemple un flux HLS fourni par un organisateur).</p>
+<input id="streamUrl" type="url" placeholder="https://exemple.com/flux.m3u8">
+<button class="primary" onclick="playStream()">Lire le flux autorisé</button>
+<video id="video" controls playsinline></video>
+<p class="small" id="playerStatus">Aucun flux chargé.</p>
+</section>
+<section class="panel">
+<h2>Accès aux diffusions officielles</h2>
+<p class="small">MatchLive pourra afficher les liens des diffuseurs officiels et intégrer les flux des clubs, organisateurs ou chaînes qui nous donnent leur autorisation. Nous ne rediffusons pas les chaînes sans licence.</p>
+<button class="secondary" onclick="document.getElementById('player').style.display='block';document.getElementById('player').scrollIntoView({behavior:'smooth'})">Ouvrir le lecteur vidéo</button>
+</section>
+
+<section class="panel" id="community">
+<h2>🎬 Vidéos de la communauté</h2>
+<p class="small">Publie tes propres moments sportifs. Dans cette démo, les vidéos restent sur ton appareil.</p>
+<input id="clipFile" type="file" accept="video/*">
+<input id="clipCaption" type="text" maxlength="120" placeholder="Décris ta vidéo...">
+<button class="primary" onclick="publishClip()">Publier ma vidéo</button>
+<div id="clips"></div>
+</section>
+</main><footer>MatchLive • Prototype gratuit • Les événements affichés sont fictifs</footer></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCy4UT9k4fPti_re7yWnZnFDdbIpV52J-Q",
+  authDomain: "macthlive-e194f.firebaseapp.com",
+  projectId: "macthlive-e194f",
+  storageBucket: "macthlive-e194f.firebasestorage.app",
+  messagingSenderId: "279056838279",
+  appId: "1:279056838279:web:b9ef18016db5bf09841222",
+  measurementId: "G-V18L24FF8D"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+const emailInput = document.getElementById("authEmail");
+const passwordInput = document.getElementById("authPassword");
+const statusText = document.getElementById("authStatus");
+const messageText = document.getElementById("authMessage");
+const signupBtn = document.getElementById("signupBtn");
+const loginBtn = document.getElementById("loginBtn");
+const googleBtn = document.getElementById("googleBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+function showMessage(message) { messageText.textContent = message; }
+
+signupBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  if (!email || password.length < 6) {
+    showMessage("Entre ton e-mail et un mot de passe d’au moins 6 caractères.");
+    return;
+  }
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    showMessage("Compte créé avec succès !");
+  } catch (error) {
+    showMessage(firebaseError(error.code));
+  }
+});
+
+loginBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  if (!email || !password) {
+    showMessage("Entre ton e-mail et ton mot de passe.");
+    return;
+  }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    showMessage("Connexion réussie !");
+  } catch (error) {
+    showMessage(firebaseError(error.code));
+  }
+});
+
+googleBtn.addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    showMessage("Connexion Google réussie !");
+  } catch (error) {
+    showMessage(firebaseError(error.code));
+  }
+});
+
+logoutBtn.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    showMessage("Tu es déconnecté(e).");
+  } catch (error) {
+    showMessage("Impossible de se déconnecter pour le moment.");
+  }
+});
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    statusText.textContent = "Connecté(e) : " + user.email;
+    signupBtn.style.display = "none";
+    loginBtn.style.display = "none";
+    googleBtn.style.display = "none";
+    logoutBtn.style.display = "block";
+  } else {
+    statusText.textContent = "Tu n’es pas connecté(e).";
+    signupBtn.style.display = "block";
+    loginBtn.style.display = "block";
+    googleBtn.style.display = "block";
+    logoutBtn.style.display = "none";
+  }
+});
+
+function firebaseError(code) {
+  const messages = {
+    "auth/email-already-in-use": "Cette adresse e-mail possède déjà un compte. Appuie sur « Me connecter ».",
+    "auth/invalid-email": "Cette adresse e-mail n’est pas valide.",
+    "auth/weak-password": "Choisis un mot de passe plus sûr (6 caractères minimum).",
+    "auth/invalid-credential": "E-mail ou mot de passe incorrect.",
+    "auth/popup-closed-by-user": "La fenêtre Google a été fermée avant la connexion.",
+    "auth/unauthorized-domain": "Le site doit d’abord être autorisé dans Firebase.",
+    "auth/network-request-failed": "Vérifie ta connexion Internet puis réessaie."
+  };
+  return messages[code] || "Erreur de connexion (" + code + "). Vérifie les réglages Firebase.";
+}
+</script>
+
+<script>
+const data={
+ football:{title:'Football',items:[['Équipe locale A','Équipe locale B','Match de démonstration','À programmer'],['Club amateur A','Club amateur B','Diffusion autorisée à ajouter','À programmer']]},
+ basket:{title:'Basketball',items:[['Équipe A','Équipe B','Match de démonstration','À programmer'],['Club amateur C','Club amateur D','Diffusion autorisée à ajouter','À programmer']]},
+ tennis:{title:'Tennis',items:[['Joueur A','Joueur B','Match de démonstration','À programmer'],['Joueuse C','Joueuse D','Tournoi à ajouter','À programmer']]},
+ other:{title:'Autres sports',items:[['Équipe A','Équipe B','Événement de démonstration','À programmer']]}
+};
+function choose(key,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render(key)}
+function render(key){let d=data[key];document.getElementById('heading').textContent=d.title;document.getElementById('events').innerHTML=d.items.map(m=>`<section class="panel"><div class="live">● EXEMPLE — PAS EN DIRECT</div><div class="match"><div class="team">${m[0]}</div><div class="versus">VS</div><div class="team">${m[1]}</div></div><div class="meta">${m[2]} · ${m[3]}</div><button class="secondary" onclick="document.getElementById('player').style.display='block';document.getElementById('player').scrollIntoView({behavior:'smooth'})">Voir les options de diffusion</button></section>`).join('')}
+function playStream(){let u=document.getElementById('streamUrl').value.trim(),v=document.getElementById('video'),s=document.getElementById('playerStatus');try{let url=new URL(u);if(url.protocol!=='https:'){s.textContent='Utilise une adresse HTTPS sécurisée.';return}v.src=url.href;v.load();s.textContent='Flux chargé si le format est pris en charge par ton navigateur.'}catch(e){s.textContent='Entre une adresse vidéo HTTPS valide.'}}
+let clipUrls=[];
+function publishClip(){
+ const file=document.getElementById('clipFile').files[0];
+ const caption=document.getElementById('clipCaption').value.trim();
+ if(!file){alert('Choisis une vidéo avant de publier.');return}
+ if(!file.type.startsWith('video/')){alert('Choisis un fichier vidéo.');return}
+ const url=URL.createObjectURL(file);clipUrls.push(url);
+ const card=document.createElement('div');card.className='panel';
+ const video=document.createElement('video');video.src=url;video.controls=true;video.playsInline=true;
+ const desc=document.createElement('p');desc.textContent=caption||'Mon moment sportif sur MatchLive';
+ desc.style.fontWeight='700';
+ const like=document.createElement('button');like.className='secondary';like.textContent='♡ J’aime 0';
+ let liked=false;like.onclick=()=>{liked=!liked;like.textContent=liked?'♥ J’aime 1':'♡ J’aime 0'};
+ const comment=document.createElement('input');comment.placeholder='Écrire un commentaire (démo)';
+ card.append(video,desc,like,comment);
+ document.getElementById('clips').prepend(card);
+ document.getElementById('clipFile').value='';document.getElementById('clipCaption').value='';
+}
+render('football');
+</script></body></html>
