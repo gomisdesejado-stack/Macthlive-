@@ -225,7 +225,7 @@ async function loadFootballMatches() {
       );
       if (!response.ok) throw new Error(name + ' : erreur ' + response.status);
       const data = await response.json();
-      return { name, matches: data.matches || [] };
+      return { name, matches: data.resultSet?.matches || data.matches || [] };
     }));
 
     box.innerHTML = '';
