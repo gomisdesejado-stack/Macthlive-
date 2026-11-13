@@ -46,7 +46,17 @@ footer{text-align:center;color:#8499a1;font-size:11px;padding:10px 20px}
 </section>
 
 <div class="notice">Bienvenue ! Cette première version est une démonstration : les rencontres ci-dessous sont des exemples, pas des scores en direct. Les diffusions vidéo nécessitent des liens autorisés par les détenteurs de droits.</div>
-<div class="tabs">
+
+<div class="panel">
+  <h2>🏆 Choisir un championnat</h2>
+  <select id="competitionSelect" onchange="loadFootballMatches()" style="width:100%;padding:14px;border-radius:10px;background:#10232d;color:white;font-size:16px;">
+    <option value="laliga">🇪🇸 La Liga</option>
+    <option value="premierleague">🏴 Premier League</option>
+    <option value="ligue1">🇫🇷 Ligue 1</option>
+    <option value="championsleague">🏆 Ligue des champions</option>
+  </select>
+</div>
+
 <button class="tab active" onclick="window.choose('football',this)">⚽ Football</button>
 <button class="tab" onclick="window.choose('basket',this)">🏀 Basketball</button>
 
@@ -211,12 +221,21 @@ async function loadFootballMatches() {
   const box = document.getElementById('events');
   const heading = document.getElementById('heading');
 
-  heading.textContent = '⚽ Football - Vrais matchs';
+  const competition = document.getElementById('competitionSelect').value;
+
+const noms = {
+  laliga: 'La Liga',
+  premierleague: 'Premier League',
+  ligue1: 'Ligue 1',
+  championsleague: 'Ligue des champions'
+};
+
+heading.textContent = '⚽ ' + noms[competition];
   box.innerHTML = '<p class="small">Chargement des matchs...</p>';
 
   try {
     const response = await fetch(
-      'https://macthlive-api.gomisdesejado.workers.dev/?competition=laliga'
+      `https://macthlive-api.gomisdesejado.workers.dev/?competition=${competition}`
     );
 
     if (!response.ok) {
