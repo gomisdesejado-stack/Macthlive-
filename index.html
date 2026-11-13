@@ -195,7 +195,83 @@ const data={
  tennis:{title:'Tennis',items:[['Joueur A','Joueur B','Match de démonstration','À programmer'],['Joueuse C','Joueuse D','Tournoi à ajouter','À programmer']]},
  other:{title:'Autres sports',items:[['Équipe A','Équipe B','Événement de démonstration','À programmer']]}
 };
-function choose(key,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render(key)}
+  
+async function loadFootballMatches() {
+  const box = document.getElementById('events');
+  const heading = document.getElementById('heading');
+
+  heading.textContent = '⚽ Football – Matchs';
+  box.innerHTML = '<p>Chargement des matchs...</p>';
+
+  const leagues = [
+  ['Coupe du monde', 'worldcup'],
+  ['Ligue des champions', 'championsleague'],
+  ['Premier League', 'premierleague'],
+  ['La Liga', 'laliga'],
+  ['Ligue 1', 'ligue1'],
+  ['Bundesliga', 'bundesliga'],
+  ['Serie A', 'seriea'],
+  ['Eredivisie', 'eredivisie'],
+  ['Championship', 'championship'],
+  ['Primeira Liga', 'primeiraliga'],
+  ['Euro', 'euro'],
+  ['Brasileirão', 'brasileirao']
+];
+
+  try {
+    const results = await Promise.all(leagues.map(async ([name, code]) => {
+      const response = await fetch(
+        'https://macthlive-api.gomisdesejado.workers.dev/?competition=' + code
+      );
+      if (!response.ok) throw new Error(name + ' : erreur ' + response.status);
+      const data = await response.json();
+      return { name, matches: data.matches || [] };
+    }));
+
+    box.innerHTML = '';
+
+    results.forEach(league => {
+      const section = document.createElement('section');
+      section.className = 'panel';
+
+      const title = document.createElement('h2');
+      title.textContent = '⚽ ' + league.name;
+      section.appendChild(title);
+
+      league.matches.slice(0, 10).forEach(match => {
+        const p = document.createElement('p');
+        p.textContent =
+          match.homeTeam.name + ' ' +
+          (match.score.fullTime.home ?? '-') + ' - ' +
+          (match.score.fullTime.away ?? '-') + ' ' +
+          match.awayTeam.name + ' · ' +
+          new Date(match.utcDate).toLocaleString('fr-FR');
+        section.appendChild(p);
+      });
+
+      if (!league.matches.length) {
+        const p = document.createElement('p');
+        p.textContent = 'Aucun match disponible actuellement.';
+        section.appendChild(p);
+      }
+
+      box.appendChild(section);
+    });
+  } catch (error) {
+    box.textContent = 'Erreur : ' + error.message;
+  }
+}
+
+function choose(key,btn){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+
+  if(key === 'football'){
+    loadFootballMatches();
+  } else {
+    render(key);
+  }
+}
 function render(key){let d=data[key];document.getElementById('heading').textContent=d.title;document.getElementById('events').innerHTML=d.items.map(m=>`<section class="panel"><div class="live">● EXEMPLE — PAS EN DIRECT</div><div class="match"><div class="team">${m[0]}</div><div class="versus">VS</div><div class="team">${m[1]}</div></div><div class="meta">${m[2]} · ${m[3]}</div><button class="secondary" onclick="document.getElementById('player').style.display='block';document.getElementById('player').scrollIntoView({behavior:'smooth'})">Voir les options de diffusion</button></section>`).join('')}
 function playStream(){let u=document.getElementById('streamUrl').value.trim(),v=document.getElementById('video'),s=document.getElementById('playerStatus');try{let url=new URL(u);if(url.protocol!=='https:'){s.textContent='Utilise une adresse HTTPS sécurisée.';return}v.src=url.href;v.load();s.textContent='Flux chargé si le format est pris en charge par ton navigateur.'}catch(e){s.textContent='Entre une adresse vidéo HTTPS valide.'}}
 let clipUrls=[];
@@ -216,5 +292,4 @@ function publishClip(){
  document.getElementById('clips').prepend(card);
  document.getElementById('clipFile').value='';document.getElementById('clipCaption').value='';
 }
-render('football');
-</script></body></html>
+loadFootballMatches();
