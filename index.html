@@ -222,16 +222,20 @@ function loadFootballMatches() {
   
 
 
-function choose(key,btn){
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+window.choose = function(key, btn) {
+  document.querySelectorAll('.tab').forEach(x => {
+    x.classList.remove('active');
+  });
+
   btn.classList.add('active');
 
-  if(key === 'football'){
+  if (key === 'football') {
     loadFootballMatches();
-  } else {
+  } else if (data[key]) {
     render(key);
   }
-}
+};
+  
 function render(key){let d=data[key];document.getElementById('heading').textContent=d.title;document.getElementById('events').innerHTML=d.items.map(m=>`<section class="panel"><div class="live">● EXEMPLE — PAS EN DIRECT</div><div class="match"><div class="team">${m[0]}</div><div class="versus">VS</div><div class="team">${m[1]}</div></div><div class="meta">${m[2]} · ${m[3]}</div><button class="secondary" onclick="document.getElementById('player').style.display='block';document.getElementById('player').scrollIntoView({behavior:'smooth'})">Voir les options de diffusion</button></section>`).join('')}
 function playStream(){let u=document.getElementById('streamUrl').value.trim(),v=document.getElementById('video'),s=document.getElementById('playerStatus');try{let url=new URL(u);if(url.protocol!=='https:'){s.textContent='Utilise une adresse HTTPS sécurisée.';return}v.src=url.href;v.load();s.textContent='Flux chargé si le format est pris en charge par ton navigateur.'}catch(e){s.textContent='Entre une adresse vidéo HTTPS valide.'}}
 let clipUrls=[];
