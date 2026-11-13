@@ -285,9 +285,17 @@ heading.textContent = '⚽ ' + noms[competition];
         <section class="panel">
           <div class="live">${statut}</div>
           <div class="match">
-            <div class="team">${m.homeTeam.name}</div>
-            <strong>${resultat}</strong>
-            <div class="team">${m.awayTeam.name}</div>
+            
+<div class="team">
+  <img src="${m.homeTeam.crest || ''}" alt="" style="width:32px;height:32px;object-fit:contain;vertical-align:middle" onerror="this.style.display='none'">
+  ${m.homeTeam.name}
+</div>
+
+<div class="team">
+  <img src="${m.awayTeam.crest || ''}" alt="" style="width:32px;height:32px;object-fit:contain;vertical-align:middle" onerror="this.style.display='none'">
+  ${m.awayTeam.name}
+</div>
+
           </div>
           <div class="meta">${date}</div>
         </section>
