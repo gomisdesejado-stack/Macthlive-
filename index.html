@@ -196,66 +196,31 @@ const data={
  other:{title:'Autres sports',items:[['Équipe A','Équipe B','Événement de démonstration','À programmer']]}
 };
   
-async function loadFootballMatches() {
+function loadFootballMatches() {
   const box = document.getElementById('events');
   const heading = document.getElementById('heading');
 
-  heading.textContent = '⚽ Football – Matchs';
-  box.innerHTML = '<p>Chargement des matchs...</p>';
-
-  const leagues = [
-  ['La Liga', 'laliga']
-];
-
-  try {
-    const results = await Promise.all(leagues.map(async ([name, code]) => {
-      const response = await fetch(
-  'https://macthlive-api.gomisdesejado.workers.dev/?competition=' + code
-);
-      if (!response.ok) throw new Error(name + ' : erreur ' + response.status);
-      const data = await response.json();
-      return { name, matches: data.resultSet?.matches || data.matches || [] };
-    }));
-
-    box.innerHTML = '';
-
-    results.forEach(league => {
-      const section = document.createElement('section');
-      section.className = 'panel';
-
-      const title = document.createElement('h2');
-      title.textContent = '⚽ ' + league.name;
-      section.appendChild(title);
-
-      league.matches.slice(0, 10).forEach(match => {
-  const p = document.createElement('p');
-
-  const home = match.homeTeam?.name || 'Équipe inconnue';
-  const away = match.awayTeam?.name || 'Équipe inconnue';
-  const homeScore = match.score?.fullTime?.home ?? '-';
-  const awayScore = match.score?.fullTime?.away ?? '-';
-  const date = match.utcDate
-    ? new Date(match.utcDate).toLocaleString('fr-FR')
-    : '';
-
-  p.textContent = home + ' ' + homeScore + ' - ' +
-    awayScore + ' ' + away + ' · ' + date;
-
-  section.appendChild(p);
-});
-
-      if (!league.matches.length) {
-        const p = document.createElement('p');
-        p.textContent = 'Aucun match disponible actuellement.';
-        section.appendChild(p);
-      }
-
-      box.appendChild(section);
-    });
-  } catch (error) {
-    box.textContent = 'Erreur : ' + error.message;
-  }
+  heading.textContent = '⚽ Football - Matchs';
+  box.innerHTML = `
+    <section class="panel">
+      <h2>🇪🇸 Liga</h2>
+      <p>Real Madrid — FC Barcelona</p>
+      <p>Atlético Madrid — Sevilla FC</p>
+      <p>Valencia CF — Athletic Club</p>
+    </section>
+    <section class="panel">
+      <h2>🏆 Autres rencontres</h2>
+      <p>Paris — Marseille</p>
+      <p>Manchester City — Arsenal</p>
+      <p>Bayern Munich — Borussia Dortmund</p>
+    </section>
+    <p class="small">
+      Matchs fictifs de démonstration — pas de scores en direct.
+    </p>
+  `;
 }
+  
+
 
 function choose(key,btn){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
