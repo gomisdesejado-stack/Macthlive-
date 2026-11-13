@@ -210,8 +210,8 @@ async function loadFootballMatches() {
   try {
     const results = await Promise.all(leagues.map(async ([name, code]) => {
       const response = await fetch(
-        'https://macthlive-api.gomisdesejado.workers.dev/?competition=' + code
-      );
+  'https://macthlive-api.gomisdesejado.workers.dev/?competition=' + code
+);
       if (!response.ok) throw new Error(name + ' : erreur ' + response.status);
       const data = await response.json();
       return { name, matches: data.resultSet?.matches || data.matches || [] };
