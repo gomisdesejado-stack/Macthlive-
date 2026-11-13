@@ -64,6 +64,14 @@ footer{text-align:center;color:#8499a1;font-size:11px;padding:10px 20px}
 <button class="tab" onclick="window.choose('other',this)">🏅 Autres</button>
 </div>
 <h2 id="heading">Football</h2>
+<div class="panel">
+  <button class="secondary" onclick="filterMatches('all')">Tous les matchs</button>
+  <button class="secondary" onclick="filterMatches('live')">🔴 En direct</button>
+  <button class="secondary" onclick="filterMatches('upcoming')">🕒 À venir</button>
+  <button class="secondary" onclick="filterMatches('finished')">✅ Terminés</button>
+  <button class="primary" onclick="loadFootballMatches()">🔄 Actualiser les scores</button>
+</div>
+
 <div id="events"></div>
 <section class="panel" id="player">
 <h2>Lecteur MatchLive</h2>
