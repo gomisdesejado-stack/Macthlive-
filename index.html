@@ -481,7 +481,16 @@ score2: player2.score || '—',
       return;
     }
 
-    box.innerHTML = matches.map(match => `
+    const liveMatches = matches.filter(m => m.status.includes('EN DIRECT'));
+const finishedMatches = matches.filter(m => m.status.includes('TERMINÉ'));
+const upcomingMatches = matches.filter(m => m.status.includes('À VENIR'));
+
+function renderGroup(title, group) {
+  if (!group.length) return '';
+
+  return `
+    <h2>${title}</h2>
+    ${group.map(match => `
       <section class="panel">
         <div class="live">${match.status}</div>
         <h3>${match.tournament}</h3>
@@ -492,7 +501,14 @@ score2: player2.score || '—',
         </div>
         <div class="meta">${match.date}</div>
       </section>
-    `).join('');
+    `).join('')}
+  `;
+}
+
+box.innerHTML =
+  renderGroup('🔴 En direct', liveMatches) +
+  renderGroup('✅ Matchs terminés', finishedMatches) +
+  renderGroup('🕒 Matchs à venir', upcomingMatches);
 
   } catch (error) {
     box.textContent = 'Impossible de charger les matchs de tennis. Réessaie plus tard.';
