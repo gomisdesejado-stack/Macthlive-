@@ -66,7 +66,14 @@ footer{text-align:center;color:#8499a1;font-size:11px;padding:10px 20px}
 <button class="tab" onclick="window.choose('other',this)">🏅 Autres</button>
 <button class="tab" onclick="window.choose('about',this)">ℹ️ À propos / Sobre nosotros</button></div>
 <button class="tab" onclick="window.choose('privacy',this)">🔒 Confidentialité / Privacidad</button>
-<h2 id="heading">Football</h2>
+<div class="panel">
+  <h3>🌍 Langue / Idioma</h3>
+  <select id="languageSelect" onchange="changeLanguage(this.value)">
+    <option value="fr">🇫🇷 Français</option>
+    <option value="es">🇪🇸 Español</option>
+  </select>
+</div>
+  <h2 id="heading">Football</h2>
 <div class="panel">
   <button class="secondary" onclick="filterMatches('all')">Tous les matchs</button>
   <button class="secondary" onclick="filterMatches('live')">🔴 En direct</button>
@@ -533,9 +540,51 @@ player2: player2.athlete?.displayName || player2.athlete?.fullName || player2.di
   
 };
   
-function render(key){let d=data[key];document.getElementById('heading').textContent=d.title;document.getElementById('events').innerHTML=d.items.map(m=>`<section class="panel"><div class="live">● EXEMPLE — PAS EN DIRECT</div><div class="match"><div class="team">${m[0]}</div><div class="versus">VS</div><div class="team">${m[1]}</div></div><div class="meta">${m[2]} · ${m[3]}</div><button class="secondary" onclick="document.getElementById('player').style.display='block';document.getElementById('player').scrollIntoView({behavior:'smooth'})">Voir les options de diffusion</button></section>`).join('')}
-function playStream(){let u=document.getElementById('streamUrl').value.trim(),v=document.getElementById('video'),s=document.getElementById('playerStatus');try{let url=new URL(u);if(url.protocol!=='https:'){s.textContent='Utilise une adresse HTTPS sécurisée.';return}v.src=url.href;v.load();s.textContent='Flux chargé si le format est pris en charge par ton navigateur.'}catch(e){s.textContent='Entre une adresse vidéo HTTPS valide.'}}
-let clipUrls=[];
+window.changeLanguage = function(lang) {
+  const fr = lang === 'fr';
+
+  const tabs = document.querySelectorAll('.tab');
+  const frenchTabs = [
+    '⚽ Football', '🏀 Basketball', '🎾 Tennis',
+    '🏅 Autres', 'ℹ️ À propos / Sobre nosotros',
+    '🔒 Confidentialité / Privacidad'
+  ];
+  const spanishTabs = [
+    '⚽ Fútbol', '🏀 Baloncesto', '🎾 Tenis',
+    '🏅 Otros', 'ℹ️ Acerca de',
+    '🔒 Privacidad'
+  ];
+
+  tabs.forEach((tab, i) => {
+    tab.textContent = (fr ? frenchTabs : spanishTabs)[i];
+  });
+
+  const filters = document.querySelectorAll(
+    'button[onclick^="filterMatches"]'
+  );
+  const frenchFilters = [
+    'Tous les matchs', '🔴 En direct',
+    '🕒 À venir', '✅ Terminés'
+  ];
+  const spanishFilters = [
+    'Todos los partidos', '🔴 En directo',
+    '🕒 Próximos', '✅ Finalizados'
+  ];
+
+  filters.forEach((button, i) => {
+    button.textContent = (fr ? frenchFilters : spanishFilters)[i];
+  });
+
+  const refresh = document.querySelector(
+    'button[onclick^="loadFootballMatches"]'
+  );
+
+  if (refresh) {
+    refresh.textContent = fr
+      ? '🔄 Actualiser les scores'
+      : '🔄 Actualizar resultados';
+  }
+};
 function publishClip(){
  const file=document.getElementById('clipFile').files[0];
  const caption=document.getElementById('clipCaption').value.trim();
