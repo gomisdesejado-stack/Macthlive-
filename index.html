@@ -419,8 +419,8 @@ async function loadTennisMatches() {
 
   try {
     const urls = [
-      'https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard',
-      'https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard'
+      'https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard?dates=20261114',
+      'https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard?dates=20261114'
     ];
 
     const responses = await Promise.all(urls.map(url => fetch(url)));
