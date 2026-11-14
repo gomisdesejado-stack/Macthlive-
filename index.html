@@ -402,6 +402,89 @@ async function loadNBAMatches() {
   }
 }
 
+async function loadTennisMatches() {
+  const box = document.getElementById('events');
+  const heading = document.getElementById('heading');
+
+  heading.textContent = '🎾 Tennis - ATP et WTA';
+  box.innerHTML = '<p class="small">Chargement des matchs de tennis...</p>';
+
+  try {
+    const urls = [
+      'https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard',
+      'https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard'
+    ];
+
+    const responses = await Promise.all(urls.map(url => fetch(url)));
+
+    if (responses.some(response => !response.ok)) {
+      throw new Error('Erreur ESPN');
+    }
+
+    const results = await Promise.all(
+      responses.map(response => response.json())
+    );
+
+    let matches = [];
+
+    results.forEach(data => {
+      (data.events || []).forEach(event => {
+        (event.groupings || []).forEach(group => {
+          (group.competitions || []).forEach(match => {
+            const players = match.competitors || [];
+
+            if (players.length < 2) return;
+
+            const player1 = players[0];
+            const player2 = players[1];
+
+            const state = match.status?.type?.state || 'pre';
+
+            const status = state === 'in'
+              ? '🔴 EN DIRECT'
+              : state === 'post'
+              ? '✅ TERMINÉ'
+              : '🕒 À VENIR';
+
+            const date = new Date(match.date).toLocaleString('fr-FR');
+
+            matches.push({
+              tournament: event.name,
+              player1: player1.athlete?.displayName || 'Joueur 1',
+              player2: player2.athlete?.displayName || 'Joueur 2',
+              score1: player1.score || '0',
+              score2: player2.score || '0',
+              status,
+              date
+            });
+          });
+        });
+      });
+    });
+
+    if (!matches.length) {
+      box.innerHTML = '<p>Aucun match de tennis disponible actuellement.</p>';
+      return;
+    }
+
+    box.innerHTML = matches.map(match => `
+      <section class="panel">
+        <div class="live">${match.status}</div>
+        <h3>${match.tournament}</h3>
+        <div class="match">
+          <div class="team">${match.player1}</div>
+          <div class="versus">${match.score1} - ${match.score2}</div>
+          <div class="team">${match.player2}</div>
+        </div>
+        <div class="meta">${match.date}</div>
+      </section>
+    `).join('');
+
+  } catch (error) {
+    box.textContent = 'Impossible de charger les matchs de tennis. Réessaie plus tard.';
+  }
+}
+
   window.choose = function(key, btn) {
   document.querySelectorAll('.tab').forEach(x => {
     x.classList.remove('active');
@@ -409,13 +492,16 @@ async function loadNBAMatches() {
 
   btn.classList.add('active');
 
-  if (key === 'football') {
+ if (key === 'football') {
   loadFootballMatches();
 } else if (key === 'basket') {
   loadNBAMatches();
+} else if (key === 'tennis') {
+  loadTennisMatches();
 } else if (data[key]) {
   render(key);
-}
+} 
+
   
 };
   
