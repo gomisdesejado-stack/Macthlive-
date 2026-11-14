@@ -259,8 +259,11 @@ heading.textContent = '⚽ ' + noms[competition];
     }
 
     const prochains = matches
-      .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate))
-      .slice(0, 20);
+  .sort((a, b) =>
+    Math.abs(new Date(a.utcDate) - Date.now()) -
+    Math.abs(new Date(b.utcDate) - Date.now())
+  )
+  .slice(0, 20);
 
     box.innerHTML = prochains.map(m => {
       const date = new Date(m.utcDate).toLocaleString('fr-FR', {
