@@ -511,6 +511,20 @@ player2: player2.athlete?.displayName || player2.athlete?.fullName || player2.di
       <p>Nuestro objetivo es ofrecer una experiencia sencilla y accesible para los aficionados al deporte.</p>
     </section>
   `;
+} else if (key === 'privacy') {
+  document.getElementById('heading').textContent = '🔒 Confidentialité / Privacidad';
+  document.getElementById('events').innerHTML = `
+    <section class="panel">
+      <h2>🇫🇷 Confidentialité</h2>
+      <p>MatchLive est une application de démonstration sportive.</p>
+      <p>Les informations de compte servent à la connexion. Ne partage jamais ton mot de passe.</p>
+      <p>Les données sportives proviennent de services externes.</p>
+      <h2>🇪🇸 Privacidad</h2>
+      <p>MatchLive es una aplicación de demostración deportiva.</p>
+      <p>La información de la cuenta se utiliza para iniciar sesión. Nunca compartas tu contraseña.</p>
+      <p>Los datos deportivos proceden de servicios externos.</p>
+    </section>
+  `;
 } else if (data[key]) {
   render(key);
 }
