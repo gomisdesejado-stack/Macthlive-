@@ -584,6 +584,21 @@ window.changeLanguage = function(lang) {
       ? '🔄 Actualiser les scores'
       : '🔄 Actualizar resultados';
   }
+  const notice = document.querySelector('.notice');
+  if (notice) {
+    notice.textContent = fr
+      ? 'Bienvenue ! Suivez les événements sportifs et les résultats sur MatchLive.'
+      : '¡Bienvenido! Sigue los eventos deportivos y los resultados en MatchLive.';
+  }
+
+  const competitionTitle = document.getElementById('competitionSelect')
+    .parentElement.querySelector('h2');
+
+  if (competitionTitle) {
+    competitionTitle.textContent = fr
+      ? '🏆 Choisir un championnat'
+      : '🏆 Elegir un campeonato';
+  }
 };
 function publishClip(){
  const file=document.getElementById('clipFile').files[0];
