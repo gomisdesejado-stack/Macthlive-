@@ -375,4 +375,11 @@ function publishClip(){
  document.getElementById('clips').prepend(card);
  document.getElementById('clipFile').value='';document.getElementById('clipCaption').value='';
 }
-loadFootballMatches();</script>
+loadFootballMatches();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
+  });
+}
+</script>
