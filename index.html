@@ -450,8 +450,8 @@ async function loadTennisMatches() {
 
             matches.push({
               tournament: event.name,
-              player1: player1.athlete?.displayName || 'Joueur 1',
-              player2: player2.athlete?.displayName || 'Joueur 2',
+              player1: player1.athlete?.displayName || player1.athlete?.fullName || player1.displayName || player1.name || player1.team?.displayName || 'Joueur 1',
+player2: player2.athlete?.displayName || player2.athlete?.fullName || player2.displayName || player2.name || player2.team?.displayName || 'Joueur 2',
               score1: player1.score || '0',
               score2: player2.score || '0',
               status,
