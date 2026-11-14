@@ -258,12 +258,23 @@ heading.textContent = '⚽ ' + noms[competition];
       return;
     }
 
-    const prochains = matches
-  .sort((a, b) =>
-    Math.abs(new Date(a.utcDate) - Date.now()) -
-    Math.abs(new Date(b.utcDate) - Date.now())
-  )
-  .slice(0, 20);
+    const maintenant = Date.now();
+
+const enCours = matches
+  .filter(m => m.status === 'IN_PLAY')
+  .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
+
+const futurs = matches
+  .filter(m => m.status !== 'FINISHED' &&
+    m.status !== 'IN_PLAY' &&
+    new Date(m.utcDate).getTime() >= maintenant)
+  .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
+
+const termines = matches
+  .filter(m => m.status === 'FINISHED')
+  .sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate));
+
+const prochains = [...enCours, ...futurs, ...termines].slice(0, 20);
 
     box.innerHTML = prochains.map(m => {
       const date = new Date(m.utcDate).toLocaleString('fr-FR', {
