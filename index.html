@@ -64,7 +64,7 @@ footer{text-align:center;color:#8499a1;font-size:11px;padding:10px 20px}
 
 <button class="tab" onclick="window.choose('tennis',this)">🎾 Tennis</button>
 <button class="tab" onclick="window.choose('other',this)">🏅 Autres</button>
-</div>
+<button class="tab" onclick="window.choose('about',this)">ℹ️ À propos / Sobre nosotros</button></div>
 <h2 id="heading">Football</h2>
 <div class="panel">
   <button class="secondary" onclick="filterMatches('all')">Tous les matchs</button>
@@ -498,9 +498,22 @@ player2: player2.athlete?.displayName || player2.athlete?.fullName || player2.di
   loadNBAMatches();
 } else if (key === 'tennis') {
   loadTennisMatches();
+} else if (key === 'about') {
+  document.getElementById('heading').textContent = 'ℹ️ À propos / Sobre nosotros';
+  document.getElementById('events').innerHTML = `
+    <section class="panel">
+      <h2>🇫🇷 À propos de MatchLive</h2>
+      <p>Bienvenue sur MatchLive ! Suivez les événements sportifs, les résultats et les rencontres de football, basketball, tennis et d'autres sports.</p>
+      <p>Notre objectif est de proposer une expérience simple et accessible aux passionnés de sport.</p>
+      <h2>🇪🇸 Sobre MatchLive</h2>
+      <p>¡Bienvenido a MatchLive! Sigue eventos deportivos, resultados y partidos de fútbol, baloncesto, tenis y otros deportes.</p>
+      <p>Nuestro objetivo es ofrecer una experiencia sencilla y accesible para los aficionados al deporte.</p>
+    </section>
+  `;
 } else if (data[key]) {
   render(key);
-} 
+}
+
 
   
 };
