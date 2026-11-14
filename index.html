@@ -341,7 +341,68 @@ function filterMatches(type) {
   });
 }
 
-window.choose = function(key, btn) {
+
+async function loadNBAMatches() {
+  const box = document.getElementById('events');
+  const heading = document.getElementById('heading');
+
+  heading.textContent = '🏀 NBA - Matchs et scores';
+  box.innerHTML = '<p class="small">Chargement des matchs NBA...</p>';
+
+  try {
+    const response = await fetch(
+      'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
+    );
+
+    if (!response.ok) throw new Error('Erreur NBA');
+
+    const data = await response.json();
+    const matches = data.events || [];
+
+    if (!matches.length) {
+      box.innerHTML = '<p>Aucun match NBA aujourd’hui.</p>';
+      return;
+    }
+
+    box.innerHTML = matches.map(match => {
+      const teams = match.competitions[0].competitors;
+      const home = teams.find(t => t.homeAway === 'home');
+      const away = teams.find(t => t.homeAway === 'away');
+
+      const state = match.status.type.state;
+      const status = state === 'in'
+        ? '🔴 EN DIRECT'
+        : state === 'post'
+        ? '✅ TERMINÉ'
+        : '🕒 À VENIR';
+
+      const date = new Date(match.date).toLocaleString('fr-FR');
+
+      return `
+        <section class="panel">
+          <div class="live">${status}</div>
+          <div class="match">
+            <div class="team">
+              <img src="${away.team.logo || ''}" style="width:32px;height:32px">
+              ${away.team.displayName}
+            </div>
+            <div class="versus">${away.score || '0'} - ${home.score || '0'}</div>
+            <div class="team">
+              <img src="${home.team.logo || ''}" style="width:32px;height:32px">
+              ${home.team.displayName}
+            </div>
+          </div>
+          <div class="meta">${date}</div>
+        </section>
+      `;
+    }).join('');
+
+  } catch (error) {
+    box.textContent = 'Impossible de charger les matchs NBA. Réessaie plus tard.';
+  }
+}
+
+  window.choose = function(key, btn) {
   document.querySelectorAll('.tab').forEach(x => {
     x.classList.remove('active');
   });
@@ -349,10 +410,13 @@ window.choose = function(key, btn) {
   btn.classList.add('active');
 
   if (key === 'football') {
-    loadFootballMatches();
-  } else if (data[key]) {
-    render(key);
-  }
+  loadFootballMatches();
+} else if (key === 'basket') {
+  loadNBAMatches();
+} else if (data[key]) {
+  render(key);
+}
+  
 };
   
 function render(key){let d=data[key];document.getElementById('heading').textContent=d.title;document.getElementById('events').innerHTML=d.items.map(m=>`<section class="panel"><div class="live">● EXEMPLE — PAS EN DIRECT</div><div class="match"><div class="team">${m[0]}</div><div class="versus">VS</div><div class="team">${m[1]}</div></div><div class="meta">${m[2]} · ${m[3]}</div><button class="secondary" onclick="document.getElementById('player').style.display='block';document.getElementById('player').scrollIntoView({behavior:'smooth'})">Voir les options de diffusion</button></section>`).join('')}
