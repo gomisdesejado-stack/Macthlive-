@@ -460,8 +460,8 @@ async function loadTennisMatches() {
               tournament: event.name,
               player1: player1.athlete?.displayName || player1.athlete?.fullName || player1.displayName || player1.name || player1.team?.displayName || 'Noms indisponibles',
 player2: player2.athlete?.displayName || player2.athlete?.fullName || player2.displayName || player2.name || player2.team?.displayName || 'Noms indisponibles',
-              score1: player1.score || '0',
-              score2: player2.score || '0',
+              score1: player1.score || '—',
+score2: player2.score || '—',
               status,
               date
             });
