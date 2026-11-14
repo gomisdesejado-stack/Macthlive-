@@ -1,0 +1,11 @@
+{
+  "name": "MatchLive",
+  "short_name": "MatchLive",
+  "description": "Tous les sports au même endroit",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08151d",
+  "theme_color": "#08151d",
+  "orientation": "portrait"
+}
