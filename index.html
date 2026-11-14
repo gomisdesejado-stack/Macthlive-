@@ -372,29 +372,38 @@ async function loadNBAMatches() {
       return;
     }
 
-    box.innerHTML = matches.map(match => {
+    const liveMatches = matches.filter(match =>
+  match.status.type.state === 'in'
+);
+
+const finishedMatches = matches.filter(match =>
+  match.status.type.state === 'post'
+);
+
+const upcomingMatches = matches.filter(match =>
+  match.status.type.state === 'pre'
+);
+
+function renderNBAGroup(title, group) {
+  if (!group.length) return '';
+
+  return `
+    <h2>${title}</h2>
+    ${group.map(match => {
       const teams = match.competitions[0].competitors;
       const home = teams.find(t => t.homeAway === 'home');
       const away = teams.find(t => t.homeAway === 'away');
-
-      const state = match.status.type.state;
-      const status = state === 'in'
-        ? '🔴 EN DIRECT'
-        : state === 'post'
-        ? '✅ TERMINÉ'
-        : '🕒 À VENIR';
 
       const date = new Date(match.date).toLocaleString('fr-FR');
 
       return `
         <section class="panel">
-          <div class="live">${status}</div>
           <div class="match">
             <div class="team">
               <img src="${away.team.logo || ''}" style="width:32px;height:32px">
               ${away.team.displayName}
             </div>
-            <div class="versus">${away.score || '0'} - ${home.score || '0'}</div>
+            <div class="versus">${away.score ?? '—'} - ${home.score ?? '—'}</div>
             <div class="team">
               <img src="${home.team.logo || ''}" style="width:32px;height:32px">
               ${home.team.displayName}
@@ -403,7 +412,14 @@ async function loadNBAMatches() {
           <div class="meta">${date}</div>
         </section>
       `;
-    }).join('');
+    }).join('')}
+  `;
+}
+
+box.innerHTML =
+  renderNBAGroup('🔴 En direct', liveMatches) +
+  renderNBAGroup('✅ Matchs terminés', finishedMatches) +
+  renderNBAGroup('🕒 Matchs à venir', upcomingMatches);
 
   } catch (error) {
     box.textContent = 'Impossible de charger les matchs NBA. Réessaie plus tard.';
