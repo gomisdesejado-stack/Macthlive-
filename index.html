@@ -309,7 +309,21 @@ heading.textContent = '⚽ ' + noms[competition];
 
   
   
+function filterMatches(type) {
+  const cards = document.querySelectorAll('#events .panel');
 
+  cards.forEach(card => {
+    const status = card.querySelector('.live')?.textContent || '';
+
+    const show =
+      type === 'all' ||
+      (type === 'live' && status.includes('EN DIRECT')) ||
+      (type === 'upcoming' && status.includes('À VENIR')) ||
+      (type === 'finished' && status.includes('TERMINÉ'));
+
+    card.style.display = show ? 'block' : 'none';
+  });
+}
 
 window.choose = function(key, btn) {
   document.querySelectorAll('.tab').forEach(x => {
