@@ -68,7 +68,8 @@ footer{text-align:center;color:#8499a1;font-size:11px;padding:10px 20px}
 <button class="tab" onclick="window.choose('other',this)">🏅 Autres</button>
 <button class="tab" onclick="window.choose('about',this)">ℹ️ À propos / Sobre nosotros</button></div>
 <button class="tab" onclick="window.choose('privacy',this)">🔒 Confidentialité / Privacidad</button>
-<div class="panel">
+<button class="tab" onclick="window.choose('contact',this)">📩 Contact</button>
+     <div class="panel">
   <h3>🌍 Langue / Idioma</h3>
   <select id="languageSelect" onchange="changeLanguage(this.value)">
     <option value="fr">🇫🇷 Français</option>
@@ -82,6 +83,7 @@ footer{text-align:center;color:#8499a1;font-size:11px;padding:10px 20px}
   <button class="secondary" onclick="filterMatches('upcoming')">🕒 À venir</button>
   <button class="secondary" onclick="filterMatches('finished')">✅ Terminés</button>
   <button class="primary" onclick="loadFootballMatches()">🔄 Actualiser les scores</button>
+
 </div>
 
 <div id="events"></div>
@@ -667,3 +669,5 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+</body>
+</html>
