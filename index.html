@@ -400,12 +400,14 @@ function renderNBAGroup(title, group) {
         <section class="panel">
           <div class="match">
             <div class="team">
-              <img src="${away.team.logo || ''}" style="width:32px;height:32px">
+              <img src="${away.team.logo || ''}" style="width:48px;height:48px;object-fit:contain">
               ${away.team.displayName}
             </div>
-            <div class="versus">${away.score ?? '—'} - ${home.score ?? '—'}</div>
+           <div class="versus" style="font-size:24px;font-weight:900;color:#ffffff;padding:8px">
+  ${away.score ?? '—'} - ${home.score ?? '—'}
+</div> 
             <div class="team">
-              <img src="${home.team.logo || ''}" style="width:32px;height:32px">
+              <img src="${home.team.logo || ''}" style="width:48px;height:48px;object-fit:contain">
               ${home.team.displayName}
             </div>
           </div>
