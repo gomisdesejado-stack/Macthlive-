@@ -576,8 +576,21 @@ box.innerHTML =
       <p>Los datos deportivos proceden de servicios externos.</p>
     </section>
   `;
-} else if (data[key]) {
-  render(key);
+} else if (key === 'contact') {
+  document.getElementById('heading').textContent = '📩 Contact';
+  document.getElementById('events').innerHTML = `
+    <section class="panel">
+      <h2>🇫🇷 Contact MatchLive</h2>
+      <p>Pour toute question ou suggestion, contactez-nous par e-mail :</p>
+      <p><a href="mailto:contact.gomisdesejado@gmail.com">contact.gomisdesejado@gmail.com</a></p>
+      <h2>🇪🇸 Contacto MatchLive</h2>
+      <p>Para cualquier pregunta o sugerencia, escríbenos por correo electrónico:</p>
+      <p><a href="mailto:contact.gomisdesejado@gmail.com">contact.gomisdesejado@gmail.com</a></p>
+    </section>
+  `;
+ } else if (data[key]) {
+
+      render(key);
 }
 
 
